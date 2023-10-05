@@ -1,97 +1,123 @@
-const myLibrary = [];
+// function Book(title, author, pages, status) {
+//   this.title = title;
+//   this.author = author;
+//   this.pages = pages;
+//   this.status = status;
+//   this.info = function () {
+//     return `${this.title} by ${this.author}, ${this.pages} pages, ${this.status}`;
+//   };
+// }
 
-function Book(title, author, pages, status) {
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.status = status;
-  this.info = function () {
+class Book {
+  constructor(title, author, pages, status) {
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.status = status;
+  }
+  info() {
     return `${this.title} by ${this.author}, ${this.pages} pages, ${this.status}`;
-  };
+  }
 }
+class Library {
+  constructor() {
+    this.books = [];
+  }
 
-function addBookToLibrary() {
-  let title = prompt("Enter the title of the book");
-  let author = prompt("Enter the author of the book");
-  let pages = prompt("Enter the number of pages in the book");
-  let status = prompt("Enter the status of the book");
+  addBook(book) {
+    this.books.push(book);
+  }
 
-  let newBook = new Book(title, author, pages, status);
-  myLibrary.push(newBook);
+  removeBook(index) {
+    this.books.splice(index, 1);
+    this.displayBooks();
+  }
 
-  console.log("book added to library:", newBook.info());
-}
+  displayBooks() {
+    const libraryContainer = document.getElementById("libraryContainer");
 
-function removeBook(index) {
-  myLibrary.splice(index, 1); // Remove the book from the myLibrary array
-  displayBooks(); // Redraw the table
-}
+    // Clear existing table if any
+    const oldTable = document.querySelector("table");
+    if (oldTable) libraryContainer.removeChild(oldTable);
 
-function displayBooks() {
-  const libraryContainer = document.getElementById("libraryContainer");
+    const table = document.createElement("table");
+    const thead = document.createElement("thead");
+    const tbody = document.createElement("tbody");
+    const headers = ["Title", "Author", "Pages", "Status", "Actions"]; // Added "Actions" for the remove button
 
-  // Clear existing table if any
-  const oldTable = document.querySelector("table");
-  if (oldTable) libraryContainer.removeChild(oldTable);
-
-  const table = document.createElement("table");
-  const thead = document.createElement("thead");
-  const tbody = document.createElement("tbody");
-  const headers = ["Title", "Author", "Pages", "Status", "Actions"]; // Added "Actions" for the remove button
-
-  // Add table headers
-  const headerRow = document.createElement("tr");
-  headers.forEach((header) => {
-    const th = document.createElement("th");
-    th.textContent = header;
-    headerRow.appendChild(th);
-  });
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-
-  // Add Book details
-  myLibrary.forEach((book, index) => {
-    const bookRow = document.createElement("tr");
-    const bookDetails = [book.title, book.author, book.pages, book.status];
-    bookDetails.forEach((detail) => {
-      const td = document.createElement("td");
-      td.textContent = detail;
-      bookRow.appendChild(td);
+    // Add table headers
+    const headerRow = document.createElement("tr");
+    headers.forEach((header) => {
+      const th = document.createElement("th");
+      th.textContent = header;
+      headerRow.appendChild(th);
     });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
 
-    // Create and append the remove button
-    const removeBtn = document.createElement("button");
-    removeBtn.textContent = "Remove";
-    removeBtn.addEventListener("click", function () {
-      removeBook(index); // Pass the index of the book to be removed
+    // Add Book details
+    this.books.forEach((book, index) => {
+      const bookRow = document.createElement("tr");
+      const bookDetails = [book.title, book.author, book.pages, book.status];
+      bookDetails.forEach((detail) => {
+        const td = document.createElement("td");
+        td.textContent = detail;
+        bookRow.appendChild(td);
+      });
+
+      // Create and append the remove button
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "Remove";
+      removeBtn.addEventListener("click", () => {
+        this.removeBook(index); // Pass the index of the book to be removed
+      });
+
+      // Create and append the "Read" button
+      const readBtn = document.createElement("button");
+      readBtn.textContent = "Read";
+      readBtn.addEventListener("click", () => {
+        book.status = "Read";
+        this.displayBooks();
+      });
+
+      const actionTd = document.createElement("td");
+      actionTd.appendChild(removeBtn);
+      actionTd.appendChild(readBtn);
+      bookRow.appendChild(actionTd);
+
+      tbody.appendChild(bookRow);
     });
-
-    // Create and append the "Read" button
-    const readBtn = document.createElement("button");
-    readBtn.textContent = "Read";
-    readBtn.addEventListener("click", function () {
-      book.status = "Read";
-      displayBooks();
-    });
-
-    const actionTd = document.createElement("td");
-    actionTd.appendChild(removeBtn);
-    actionTd.appendChild(readBtn);
-    bookRow.appendChild(actionTd);
-
-    tbody.appendChild(bookRow);
-  });
-  table.appendChild(tbody);
-  libraryContainer.appendChild(table);
+    table.appendChild(tbody);
+    libraryContainer.appendChild(table);
+  }
 }
+
+// function addBookToLibrary() {
+//   let title = prompt("Enter the title of the book");
+//   let author = prompt("Enter the author of the book");
+//   let pages = prompt("Enter the number of pages in the book");
+//   let status = prompt("Enter the status of the book");
+
+//   let newBook = new Book(title, author, pages, status);
+//   myLibrary.push(newBook);
+
+//   console.log("book added to library:", newBook.info());
+// }
+
+// function removeBook(index) {
+//   myLibrary.splice(index, 1); // Remove the book from the myLibrary array
+//   displayBooks(); // Redraw the table
+// }
 
 // Add some sample books
 // addBookToLibrary("The Great Gatsby", "F. Scott Fitzgerald", "218", "Read");
 // addBookToLibrary("Moby Dick", "Herman Melville", "635", "Not Read");
 // addBookToLibrary("1984", "George Orwell", "328", "Read");
 
-// Display the books
-displayBooks();
+// // Display the books
+// displayBooks();
+
+const myLibrary = new Library();
 
 //get the button and form elements
 const addBookButton = document.getElementById("addBookBtn");
@@ -123,8 +149,8 @@ bookForm.addEventListener("submit", function (event) {
   const newFormBook = new Book(title, author, pages, status);
 
   //Add newBook to the Library
-  myLibrary.push(newFormBook);
-  displayBooks();
+  myLibrary.addBook(newFormBook);
+  myLibrary.displayBooks();
 
   //reset form for a new entry
   bookForm.reset();
@@ -135,3 +161,5 @@ function clearTable() {
   const oldTable = document.querySelector("table");
   if (oldTable) libraryContainer.removeChild(oldTable);
 }
+
+myLibrary.displayBooks();
